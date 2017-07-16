@@ -1,5 +1,6 @@
 import random
 import switch
+import sys
 from random import randint
 
 RANDOM_FUNC_CHOICE = 1
