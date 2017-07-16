@@ -5,7 +5,6 @@ from datetime import datetime
 from random import randint
 from simpleshuffle import SimpleShuffle
 
-
 class PairShuffle(object):
     def __init__(self, modulus, k):
         self.modulus = modulus
@@ -41,17 +40,17 @@ class PairShuffle(object):
 
         # u w a random lists
         for i in range(k):
-            u[i] = shuffle_random.shuffle_rand_int(1, 0, order - 1)
+            u[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
         for i in range(k):
-            w[i] = shuffle_random.shuffle_rand_int(1, 0, order - 1)
+            w[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
         for i in range(k):
-            a[i] = shuffle_random.shuffle_rand_int(1, 0, order - 1)
-        tau0 = shuffle_random.shuffle_rand_int(1, 0, order - 1)
+            a[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
+        tau0 = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
         for i in range(k):
-            self.v2Zrho[i] = shuffle_random.shuffle_rand_int(1, 0, order - 1)
+            self.v2Zrho[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
 
-        nu = shuffle_random.shuffle_rand_int(1, 1, order - 1)
-        gamma = shuffle_random.shuffle_rand_int(1, 1, order - 1)
+        nu = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 1, order - 1)
+        gamma = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 1, order - 1)
 
         # compute public commits
         self.p1Gamma = pow(generator, gamma, modulus)  # (21)
@@ -105,7 +104,7 @@ class PairShuffle(object):
 
         # Verifier step 4
         # Generate random Lamda for fourth step
-        self.v4Zlamda = shuffle_random.shuffle_rand_int(1, 0, order - 1)
+        self.v4Zlamda = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
 
         if self.v4Zlamda == [None] * k:
             raise Exception("Error")
@@ -201,14 +200,14 @@ class PairShuffle(object):
         pi = range(k)
 
         for i in range(k - 1, 1, -1):  # Permutation array
-            j = shuffle_random.shuffle_rand_int(1, 0, i)
+            j = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, i)
             if j != i:
                 temporary_variable = pi[j]
                 pi[j] = pi[i]
                 pi[i] = temporary_variable
         neff_beta = [None] * k  # Initializing BETA
         for i in range(0, k):
-            neff_beta[i] = shuffle_random.shuffle_rand_int(1, 0, order - 1)
+            neff_beta[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
         XBar = [None] * k  # Initializing XBar
         YBar = [None] * k  # Initializing YBar
 

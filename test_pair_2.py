@@ -4,7 +4,7 @@ from Crypto.Random import random
 from Crypto import Random
 import binascii
 import random
-
+import shuffle_random
 
 def main():
     Resoolt3 = 0
@@ -35,7 +35,7 @@ def main():
     pairshuffle_obj = PairShuffle(p, 5)
     Xbar, Ybar = pairshuffle_obj.go_shuffle_shuffle(p, q, g, H, X, Y)
     b_var = pairshuffle_obj.go_shuffle_verify(p, q, g, H, X, Y, Xbar, Ybar)
-    print b_var
+    print (b_var)
 
 
 if __name__ == "__main__":

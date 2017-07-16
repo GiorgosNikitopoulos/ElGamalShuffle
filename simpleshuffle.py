@@ -4,7 +4,6 @@ import shuffle_random
 from datetime import datetime
 from random import randint
 
-
 class SimpleShuffle(object):
     def __init__(self, modulus, k):
         self.p0Y = [None] * k
@@ -34,7 +33,7 @@ class SimpleShuffle(object):
             raise Exception('Error')
 
         # Verifier Step 1: create t in Zq
-        self.v1Zt = shuffle_random.shuffle_rand_int(1, 0, order - 1)
+        self.v1Zt = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
         t = self.v1Zt
 
         if self.v1Zt == None:
@@ -54,7 +53,7 @@ class SimpleShuffle(object):
         theta = [None] * thlen
         Theta = [None] * (thlen + 1)
         for i in range((2 * k) - 1):
-            theta[i] = shuffle_random.shuffle_rand_int(1, 0, order - 1)
+            theta[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
         Theta[0] = thenc(modulus, order, G, None, None, theta[0], y_hat[0])
         for i in range(1, k):
             Theta[i] = thenc(modulus, order, G, theta[i - 1],
@@ -71,7 +70,7 @@ class SimpleShuffle(object):
         #(7) theta and Theta vectors: End
 
         # Verifier Step 3
-        self.v3Zc = shuffle_random.shuffle_rand_int(1, 0, order - 1)
+        self.v3Zc = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
         c = self.v3Zc
 
         if self.v3Zc == None:
