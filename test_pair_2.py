@@ -10,7 +10,7 @@ def main():
     Resoolt3 = 0
     Resoolt1 = [None] * 5
     Resoolt2 = [None] * 5
-    k = 5  # Number in list
+    k = 100  # Number in list
     ##key = ElGamal.generate(512, Random.new().read)
 ##    q = (key.p - 1) / 2
     p = 10198267722357351868598076141027380280417188309231803909918464305012113541414604537422741096561285049775792035177041672305646773132014126091142862443826263
@@ -32,7 +32,7 @@ def main():
         X[i] = pow(g, r, p)
         Y[i] = pow(H, r, p)
         Y[i] = (Y[i] * C[i]) % p
-    pairshuffle_obj = PairShuffle(p, 5)
+    pairshuffle_obj = PairShuffle(p, k)
     Xbar, Ybar = pairshuffle_obj.go_shuffle_shuffle(p, q, g, H, X, Y)
     b_var = pairshuffle_obj.go_shuffle_verify(p, q, g, H, X, Y, Xbar, Ybar)
     print (b_var)

@@ -31,6 +31,8 @@ class PairShuffle(object):
             raise Exception("Mismatched Vector Length")
         k = self.k
         piinv = [None] * k
+        print 'This is k fam: ' + str(k)
+        print pi
         for i in range(k):
             piinv[pi[i]] = i
         # Prover STEP 1
@@ -199,7 +201,7 @@ class PairShuffle(object):
             raise Exception("alpha,beta vectors have inconsistent length")
         pi = range(k)
 
-        for i in range(k - 1, 1, -1):  # Permutation array
+        for i in range(k - 1, 0, -1):  # Permutation array
             j = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, i)
             if j != i:
                 temporary_variable = pi[j]
@@ -216,9 +218,9 @@ class PairShuffle(object):
             XBar[i] = (XBar[i] * alpha[pi[i]]) % modulus  # (17)
             YBar[i] = pow(public, neff_beta[pi[i]], modulus)  # (17)
             YBar[i] = (YBar[i] * beta[pi[i]]) % modulus  # (17)
-        try:
-            self.go_shuffle_prove(pi, modulus, order,
-                                  generator, public, alpha, beta, neff_beta)
-        except Exception:
-            raise Exception('Error')
+        # try:
+        self.go_shuffle_prove(pi, modulus, order,
+                              generator, public, alpha, beta, neff_beta)
+        # except Exception:
+            # raise Exception('Error')
         return XBar, YBar
