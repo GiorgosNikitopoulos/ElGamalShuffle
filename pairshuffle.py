@@ -79,16 +79,10 @@ class PairShuffle(object):
         self.p1Lamda2 = (h_to_the_wbetasum * self.p1Lamda2) % modulus  # (23)
 
         # Verifier STEP 2
-        B = []
-        P = []
-
         if None in self.v2Zrho:
             raise Exception("Error, None in v2Zrho")
 
-        for i in range(k):
-            P.append(pow(generator, self.v2Zrho[i], modulus))  # (24)
-            temporary_variable = gmpy2.invert(self.p1U[i], modulus)
-            B.append((P[i] * temporary_variable) % modulus)  # (24)
+        B = [(pow(generator, self.v2Zrho[i], modulus) * gmpy2.invert(self.p1U[i], modulus)) for i in xrange(k)]
 
         # Prover step 3
         b = []
@@ -125,6 +119,7 @@ class PairShuffle(object):
             self.p5Zsigma.append((w[i] + b[pi[i]]) % order)  # (28)
             self.p5Ztau = (
                 self.p5Ztau + ((b[i] * neff_beta[i]) % order)) % order  # (29)
+
         if self.v4Zlamda == -1:
             raise Exception("Error, v4Zlamda is an inappropriate value")
         # Make the dictionary for p5
