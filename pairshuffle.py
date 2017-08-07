@@ -10,17 +10,17 @@ class PairShuffle(object):
         self.modulus = modulus
         self.k = k
         self.p1Gamma = 0
-        self.p1A = [None] * k
-        self.p1C = [None] * k
-        self.p1U = [None] * k
-        self.p1W = [None] * k
-        self.v2Zrho = [None] * k
-        self.p3D = [None] * k
+        self.p1A = []
+        self.p1C = []
+        self.p1U = []
+        self.p1W = []
+        self.v2Zrho = []
+        self.p3D = []
         self.p1Lamda1 = 0
         self.p1Lamda2 = 0
-        self.v4Zlamda = [None] * k
-        self.p5Zsigma = [None] * k
-        self.p5Ztau = 0
+        self.v4Zlamda = -1
+        self.p5Zsigma = []
+        self.p5Ztau = -1
         self.pv6 = SimpleShuffle(modulus, k)
 
     # Alpha and beta are respectively X and Y
@@ -31,25 +31,23 @@ class PairShuffle(object):
             raise Exception("Mismatched Vector Length")
         k = self.k
         piinv = [None] * k
-        print 'This is k fam: ' + str(k)
-        print pi
         for i in range(k):
             piinv[pi[i]] = i
         # Prover STEP 1
-        u = [None] * k
-        w = [None] * k
-        a = [None] * k
+        u = []
+        w = []
+        a = []
 
         # u w a random lists
         for i in range(k):
-            u[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
+            u.append(shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1))
         for i in range(k):
-            w[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
+            w.append(shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1))
         for i in range(k):
-            a[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
+            a.append(shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1))
         tau0 = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
         for i in range(k):
-            self.v2Zrho[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
+            self.v2Zrho.append(shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1))
 
         nu = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 1, order - 1)
         gamma = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 1, order - 1)
@@ -60,12 +58,12 @@ class PairShuffle(object):
         self.p1Lamda1 = 1
         self.p1Lamda2 = 1
         for i in range(k):
-            self.p1A[i] = pow(generator, a[i], modulus)  # (21)
+            self.p1A.append(pow(generator, a[i], modulus))  # (21)
             temporary_variable = (gamma * a[pi[i]]) % order
-            self.p1C[i] = pow(generator, temporary_variable, modulus)  # (21)
-            self.p1U[i] = pow(generator, u[i], modulus)  # (21)
+            self.p1C.append(pow(generator, temporary_variable, modulus))  # (21)
+            self.p1U.append(pow(generator, u[i], modulus))  # (21)
             temporary_variable = (gamma * w[i]) % order
-            self.p1W[i] = pow(generator, temporary_variable, modulus)  # (21)
+            self.p1W.append(pow(generator, temporary_variable, modulus))  # (21)
             temporary_variable = (w[i] * neff_beta[pi[i]]) % order
             wbetasum = (wbetasum + temporary_variable) % order
             temporary_variable = (w[piinv[i]] - u[i]) % order
@@ -81,73 +79,76 @@ class PairShuffle(object):
         self.p1Lamda2 = (h_to_the_wbetasum * self.p1Lamda2) % modulus  # (23)
 
         # Verifier STEP 2
-        B = [None] * k
-        P = [None] * k
+        B = []
+        P = []
 
-        if self.v2Zrho == [None] * k:
-            raise Exception("Error")
+        if None in self.v2Zrho:
+            raise Exception("Error, None in v2Zrho")
 
         for i in range(k):
-            P[i] = pow(generator, self.v2Zrho[i], modulus)  # (24)
+            P.append(pow(generator, self.v2Zrho[i], modulus))  # (24)
             temporary_variable = gmpy2.invert(self.p1U[i], modulus)
-            B[i] = (P[i] * temporary_variable) % modulus  # (24)
+            B.append((P[i] * temporary_variable) % modulus)  # (24)
 
         # Prover step 3
-        b = [None] * k
+        b = []
         for i in range(k):
-            b[i] = (self.v2Zrho[i] - u[i]) % order  # (25)
+            b.append((self.v2Zrho[i] - u[i]) % order)  # (25)
 
-        d = [None] * k  # Init
+        d = [] # Init
         for i in range(k):
-            d[i] = (gamma * b[pi[i]]) % order  # (26)
-            self.p3D[i] = pow(generator, d[i], modulus)  # (26)
-        if self.p3D == [None] * k:
-            raise Exception("Error")
+            d.append((gamma * b[pi[i]]) % order)  # (26)
+            self.p3D.append(pow(generator, d[i], modulus))  # (26)
+        if None in self.p3D:
+            raise Exception("Error, p3D has a None")
 
         # Verifier step 4
         # Generate random Lamda for fourth step
         self.v4Zlamda = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
 
-        if self.v4Zlamda == [None] * k:
-            raise Exception("Error")
+        if self.v4Zlamda == -1:
+            raise Exception("Error, v4Zlamda is an inappropriate value")
 
-        r = [None] * k
+        r = []
         for i in range(k):
             # lambda * betai in (27)
             temporary_variable = (self.v4Zlamda * b[i]) % order
-            r[i] = (temporary_variable + a[i]) % order  # (27)
+            r.append((temporary_variable + a[i]) % order)  # (27)
 
-        s = [None] * k
+        s = []
         for i in range(k):
-            s[i] = (gamma * r[pi[i]]) % order  # Compute sigma under (27)
+            s.append((gamma * r[pi[i]]) % order)  # Compute sigma under (27)
 
         # Prover step 5
         self.p5Ztau = (-tau0) % order  # Compute -tau0 in (29)
         for i in range(k):
-            self.p5Zsigma[i] = (w[i] + b[pi[i]]) % order  # (28)
+            self.p5Zsigma.append((w[i] + b[pi[i]]) % order)  # (28)
             self.p5Ztau = (
                 self.p5Ztau + ((b[i] * neff_beta[i]) % order)) % order  # (29)
-        if self.v4Zlamda == [None] * k:
-            raise Exception("Error")
+        if self.v4Zlamda == -1:
+            raise Exception("Error, v4Zlamda is an inappropriate value")
         # Make the dictionary for p5
-        try:
-            # (30)
-            return self.pv6.Prove(modulus, order, generator, gamma, r, s)
-        except Exception:
-            raise Exception('Error')
+        # (30)
+        return self.pv6.Prove(modulus, order, generator, gamma, r, s)
 
     def go_shuffle_verify(self, modulus, order, generator, public, alpha, beta, alphabar, betabar):
         """PairShuffle Verify function. Returns 1 if Verify is successful"""
 
         k = self.k  # length
         if len(alpha) != k or len(beta) != k or len(alphabar) != k or len(betabar) != k:
-            raise Exception('Error')
+            raise Exception('Error, inappropriate vector lengths')
         # Check for error there if p1 is null
-        if self.p1A == [None] * k or self.p1U == [None] * k or self.p1W == [None] * k or self.p1C == [None] * k or self.p1Gamma == 0 or self.p1Gamma == None or self.p1Lamda1 == 0:
-            raise Exception("Error")
+        if None in self.p1A \
+            or None in self.p1U \
+            or None in self.p1W \
+            or None in self.p1C \
+            or self.p1Gamma == 0 \
+            or self.p1Gamma == None \
+            or self.p1Lamda1 == 0:
+            raise Exception("Error, in the p1 step")
         # Check for error there if v2 is null
-        if self.v2Zrho == [None] * k:
-            raise Exception("Error")
+        if None in self.v2Zrho:
+            raise Exception("Error, None value in v2Zrho")
 
         # Verifier step 2
         B = [None] * k
@@ -155,19 +156,17 @@ class PairShuffle(object):
             P = pow(generator, self.v2Zrho[i], modulus)  # g = generator
             B = (P * gmpy2.invert(self.p1U[i], modulus)) % modulus  # (24)
         # Check for error there if p3 is null
-        if self.p3D == [None] * k:
-            raise Exception("Error")
+        if None in self.p3D:
+            raise Exception("Error, None value in p3D")
         # Check for error there if v4 is null
-        if self.v4Zlamda == [None] * k:
-            raise Exception("Error")
+        if self.v4Zlamda == -1:
+            raise Exception("Error, v4Zlamda is an inappropriate value")
         # Prover and Verifier step 6: simple k-shuffle
-        try:
-            self.pv6.Verify(modulus, order, generator, self.p1Gamma)
-        except Exception:
-            raise Exception('Error')
+        self.pv6.Verify(modulus, order, generator, self.p1Gamma)
+
         # Check for error there if p5 is null
-        if self.p5Ztau == [None] * k:
-            raise Exception("Error")
+        if self.p5Ztau == -1:
+            raise Exception("Error, None value in p5Ztau")
 
         # Verifier Step 7
         Phi1 = 1
@@ -207,20 +206,17 @@ class PairShuffle(object):
                 temporary_variable = pi[j]
                 pi[j] = pi[i]
                 pi[i] = temporary_variable
-        neff_beta = [None] * k  # Initializing BETA
-        for i in range(0, k):
-            neff_beta[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
-        XBar = [None] * k  # Initializing XBar
-        YBar = [None] * k  # Initializing YBar
+        neff_beta = [] # Initializing BETA
+        for i in range(k):
+            neff_beta.append(shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1))
+        XBar = []  # Initializing XBar
+        YBar = []  # Initializing YBar
 
-        for i in range(0, k):
-            XBar[i] = pow(generator, neff_beta[pi[i]], modulus)  # (17)
-            XBar[i] = (XBar[i] * alpha[pi[i]]) % modulus  # (17)
-            YBar[i] = pow(public, neff_beta[pi[i]], modulus)  # (17)
-            YBar[i] = (YBar[i] * beta[pi[i]]) % modulus  # (17)
-        # try:
+        for i in range(k):
+            XBar_tmp = pow(generator, neff_beta[pi[i]], modulus)  # (17)
+            XBar.append((XBar_tmp * alpha[pi[i]]) % modulus)  # (17)
+            YBar_tmp = pow(public, neff_beta[pi[i]], modulus)  # (17)
+            YBar.append((YBar_tmp * beta[pi[i]]) % modulus)  # (17)
         self.go_shuffle_prove(pi, modulus, order,
                               generator, public, alpha, beta, neff_beta)
-        # except Exception:
-            # raise Exception('Error')
         return XBar, YBar

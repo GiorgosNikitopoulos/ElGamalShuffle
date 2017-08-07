@@ -6,8 +6,8 @@ from random import randint
 
 class SimpleShuffle(object):
     def __init__(self, modulus, k):
-        self.p0Y = [None] * k
-        self.p0X = [None] * k
+        self.p0Y = []
+        self.p0X = []
         self.p2Theta = [None] * (2 * k)
         self.p4Zalpha = [None] * (2 * k - 1)
         self.v1Zt = 0
@@ -26,34 +26,34 @@ class SimpleShuffle(object):
         # Step 0: xi = logG(Xi), Xi = G^xi, same for yi.
         # Basically creates Yi and Xi
         for i in range(k):
-            self.p0X[i] = pow(G, x[i], modulus)
-            self.p0Y[i] = pow(G, y[i], modulus)
+            self.p0X.append(pow(G, x[i], modulus))
+            self.p0Y.append(pow(G, y[i], modulus))
 
-        if self.p0X == [None] * k or self.p0Y == [None] * k:
-            raise Exception('Error')
+        if None in self.p0X  or None in self.p0Y:
+            raise Exception('Error, p0X or p0Y has a None')
 
         # Verifier Step 1: create t in Zq
         self.v1Zt = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
         t = self.v1Zt
 
         if self.v1Zt == None:
-            raise Exception('Error')
+            raise Exception('v1Zt is None')
 
         # Prover step 2
         gamma_t = (gamma * t) % order  # (gamma * t) variable
-        x_hat = [None] * k  # Inits
-        y_hat = [None] * k
+        x_hat = []  # Inits
+        y_hat = []
 
         for i in range(k):
-            x_hat[i] = (x[i] - t) % order  # (5)
-            y_hat[i] = (y[i] - gamma_t) % order  # (6)
+            x_hat.append((x[i] - t) % order)  # (5)
+            y_hat.append((y[i] - gamma_t) % order)  # (6)
 
         #(7) theta and Theta vectors: Start
         thlen = (2 * k) - 1
-        theta = [None] * thlen
+        theta = []
         Theta = [None] * (thlen + 1)
         for i in range((2 * k) - 1):
-            theta[i] = shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1)
+            theta.append(shuffle_random.shuffle_rand_int(shuffle_random.RANDOM_FUNC_CHOICE, 0, order - 1))
         Theta[0] = thenc(modulus, order, G, None, None, theta[0], y_hat[0])
         for i in range(1, k):
             Theta[i] = thenc(modulus, order, G, theta[i - 1],
@@ -65,8 +65,8 @@ class SimpleShuffle(object):
             modulus, order, G, theta[thlen - 1], gamma, None, None)
         self.p2Theta = Theta
 
-        if self.p2Theta == [None] * (2 * k):
-            raise Exception('Error')
+        if None in self.p2Theta:
+            raise Exception('Error, p2Theta has a None')
         #(7) theta and Theta vectors: End
 
         # Verifier Step 3
@@ -74,7 +74,7 @@ class SimpleShuffle(object):
         c = self.v3Zc
 
         if self.v3Zc == None:
-            raise Exception('Error')
+            raise Exception('Error, v3Zc is None')
 
         # Prover step 4
         alpha = [None] * thlen
@@ -96,8 +96,8 @@ class SimpleShuffle(object):
         # Verifier step 5
         self.p4Zalpha = alpha
 
-        if self.p4Zalpha == [None] * (2 * k - 1):
-            raise Exception('Error')
+        if None in self.p4Zalpha:
+            raise Exception('None in p4Zalpha')
 
         return 1
 
@@ -111,17 +111,18 @@ class SimpleShuffle(object):
         k = len(Y)
         thlen = (2 * k) - 1
         if k <= 1 or len(Y) != k or len(Theta) != thlen + 1 or len(alpha) != thlen:
-            raise Exception('Something went wrong')
-        if self.p0X == [None] * k or self.p0Y == [None] * k:
-            raise Exception('Error')
+            raise Exception('Something went wrong with vector lengths')
+
+        if None in self.p0X  or None in self.p0Y:
+            raise Exception('None in p0X or p0Y')
         if self.v1Zt == None:
-            raise Exception('Error')
-        if self.p2Theta == [None] * (2 * k):
-            raise Exception('Error')
+            raise Exception('v1Zt is None')
+        if None in self.p2Theta:
+            raise Exception('p2Theta has a None')
         if self.v3Zc == None:
-            raise Exception('Error')
-        if self.p4Zalpha == [None] * (2 * k - 1):
-            raise Exception('Error')
+            raise Exception('v3Zc is None')
+        if None in self.p4Zalpha:
+            raise Exception('p4Zalpha has a None')
         t = self.v1Zt
         c = self.v3Zc
 
@@ -129,11 +130,11 @@ class SimpleShuffle(object):
         negt = (-t) % order  # find -t
         U = pow(G, negt, modulus)  # (10)
         W = pow(Gamma, negt, modulus)  # (10)
-        X_hat = [None] * k  # Init
-        Y_hat = [None] * k
+        X_hat = []  # Init
+        Y_hat = []
         for i in range(k):
-            X_hat[i] = (X[i] * U) % modulus  # (11)
-            Y_hat[i] = (Y[i] * W) % modulus  # (11)
+            X_hat.append((X[i] * U) % modulus)  # (11)
+            Y_hat.append((Y[i] * W) % modulus)  # (11)
         P = 0
         Q = 0
         s = 0
